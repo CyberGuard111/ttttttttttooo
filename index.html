@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для Софии</title>
+    <style>
+        :root {
+            --bg-color: #0c0c0c;
+            --text-color: #ffffff;
+            --muted-color: #aaaaaa;
+            --accent-glow: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .cursor-glow {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 3;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            padding: 25px;
+            background: rgba(12, 12, 12, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.12em;
+            margin-bottom: 1.8rem;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            color: #e0e0e0;
+            margin-bottom: 2.2rem;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 12px 28px;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sofia-name {
+            font-size: 3.2rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin: 1rem 0;
+            display: inline-block;
+            animation: slowPulse 3s infinite ease-in-out;
+        }
+
+        .final-heart {
+            font-size: 3rem;
+            margin-top: 1rem;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        @keyframes slowPulse {
+            0%, 100% { text-shadow: 0 0 8px rgba(255,255,255,0); }
+            50% { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.6rem; }
+            p { font-size: 0.95rem; }
+            .sofia-name { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="glow"></div>
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <!-- Шаг 1 -->
+        <div class="screen active" id="step1">
+            <h1>Привет, София</h1>
+            <p>В мире миллиарды людей, дорог и случайных совпадений. Но среди всей этой огромной вселенной есть одна история, которая важна для меня сильнее всего.</p>
+            <button class="btn" onclick="nextStep(1, 2)">Какая?</button>
+        </div>
+
+        <!-- Шаг 2 -->
+        <div class="screen" id="step2">
+            <p>Это история про то, как здорово и легко мне быть рядом с тобой. Каждый день, когда мы общаемся, становится особенным, и мне совсем не хочется, чтобы это прекращалось.</p>
+            <button class="btn" onclick="nextStep(2, 3)">Узнать больше</button>
+        </div>
+
+        <!-- Шаг 3 -->
+        <div class="screen" id="step3">
+            <p>Говорят, в 14 лет всё только начинается. И я хочу начать это начало вместе с тобой. Ты мне очень нравишься.</p>
+            <button class="btn" onclick="nextStep(3, 4)">И поэтому...</button>
+        </div>
+
+        <!-- Шаг 4: Главный вопрос -->
+        <div class="screen" id="step4">
+            <div class="sofia-name">София</div>
+            <p style="margin-bottom: 2rem;">Давай попробуем быть парой? 🤍</p>
+            <div class="btn-group">
+                <button class="btn" onclick="nextStep(4, 5)">Да</button>
+                <button class="btn" onclick="nextStep(4, 5)">Конечно да</button>
+            </div>
+        </div>
+
+        <!-- Шаг 5: Финал после согласия -->
+        <div class="screen" id="step5">
+            <h1>Это лучшее решение!</h1>
+            <p>Теперь это наша общая маленькая вселенная. Обещаю ценить каждый момент вместе.</p>
+            <div class="final-heart">🤍</div>
+        </div>
+    </div>
+
+    <script>
+        function nextStep(current, next) {
+            const currentScreen = document.getElementById(`step${current}`);
+            const nextScreen = document.getElementById(`step${next}`);
+            
+            currentScreen.style.opacity = '0';
+            setTimeout(() => {
+                currentScreen.classList.remove('active');
+                nextScreen.classList.add('active');
+                setTimeout(() => {
+                    nextScreen.style.opacity = '1';
+                }, 50);
+            }, 600);
+        }
+
+        const glow = document.getElementById('glow');
+        window.addEventListener('mousemove', (e) => {
+            glow.style.opacity = '1';
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        window.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+
+        // Нежный фон (редкие мерцающие белые точки)
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const stars = [];
+        for (let i = 0; i < 35; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 0.7 + 0.3,
+                alpha: Math.random(),
+                speed: Math.random() * 0.015 + 0.005
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            stars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+                ctx.globalAlpha = Math.abs(star.alpha);
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
